@@ -1,0 +1,62 @@
+shashidhar@shashidhar-VirtualBox:/usr/bin$ cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 4.0 | CQL spec 3.4.5 | Native protocol v4]
+Use HELP for help.
+cqlsh> create keyspace employee with replication = {'class':'SimpleStrategy','replication_factor':1 };
+cqlsh> DESCRIBE KEYSPACES;
+
+employee   system       system_distributed  system_traces  system_virtual_schema
+students1  system_auth  system_schema       system_views 
+
+cqlsh> use employee;
+cqlsh:employee> create table employee_info(emp_id int primary key,emp_name text,designation text,dateofjioning timestamp,salary double,dept_name text);
+cqlsh:employee> describe tables;
+
+employee_info
+
+cqlsh:employee> begin batch insert into employee_info(emp_id,emp_name,designation,dateofjioning,salary,dept_name) values(121,'Shashidhar Pai B','Project  manager','2012-03-29',20000,'Software Developer') insert into employee_info(emp_id,emp_name,designation,dateofjioning,salary,dept_name) values(122,'Sharan','Technical manager','2014-03-09',30000,'oops') apply batch;
+cqlsh:employee> select * from employee_info;
+
+ emp_id | dateofjioning                   | dept_name          | designation       | emp_name         | salary
+--------+---------------------------------+--------------------+-------------------+------------------+--------
+    122 | 2014-03-08 18:30:00.000000+0000 |               oops | Technical manager |           Sharan |  30000
+    121 | 2012-03-28 18:30:00.000000+0000 | Software Developer |  Project  manager | Shashidhar Pai B |  20000
+
+(2 rows)
+cqlsh:employee> update employee_info SET emp_name='samarth',dept_name='technical core' where emp_id=121;
+cqlsh:employee> select * from employee_info;
+
+ emp_id | dateofjioning                   | dept_name      | designation       | emp_name | salary
+--------+---------------------------------+----------------+-------------------+----------+--------
+    122 | 2014-03-08 18:30:00.000000+0000 |           oops | Technical manager |   Sharan |  30000
+    121 | 2012-03-28 18:30:00.000000+0000 | technical core |  Project  manager |  samarth |  20000
+
+(2 rows)
+cqlsh:employee> Alter table employee_info add projects text; 
+cqlsh:employee> select * from employee_info;
+
+ emp_id | dateofjioning                   | dept_name      | designation       | emp_name | projects | salary
+--------+---------------------------------+----------------+-------------------+----------+----------+--------
+    122 | 2014-03-08 18:30:00.000000+0000 |           oops | Technical manager |   Sharan |     null |  30000
+    121 | 2012-03-28 18:30:00.000000+0000 | technical core |  Project  manager |  samarth |     null |  20000
+
+(2 rows)
+cqlsh:employee> update employee_info set projects='Just Vend' where emp_id in (121,122);
+cqlsh:employee> select * from employee_info;
+
+ emp_id | dateofjioning                   | dept_name      | designation       | emp_name | projects  | salary
+--------+---------------------------------+----------------+-------------------+----------+-----------+--------
+    122 | 2014-03-08 18:30:00.000000+0000 |           oops | Technical manager |   Sharan | Just Vend |  30000
+    121 | 2012-03-28 18:30:00.000000+0000 | technical core |  Project  manager |  samarth | Just Vend |  20000
+
+(2 rows)
+cqlsh:employee>  insert into employee_info(emp_id,emp_name,designation,dateofjioning,salary,dept_name,projects) values(123,'shashidhar','Technical manager','2015-03-09',40000,'oops','Web project') using ttl 15;
+cqlsh:employee> select ttl(emp_name) from employee_info;
+
+ ttl(emp_name)
+---------------
+          null
+          null
+
+(2 rows)
+

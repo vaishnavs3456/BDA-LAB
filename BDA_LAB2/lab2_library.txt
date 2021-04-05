@@ -1,0 +1,84 @@
+shashidhar@shashidhar-VirtualBox:/usr/bin$ cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 4.0 | CQL spec 3.4.5 | Native protocol v4]
+Use HELP for help.
+cqlsh> create keyspace library with replication = {'class':'SimpleStrategy','replication_factor':1};
+cqlsh> describe keyspaces;
+
+employee  students1  system_auth         system_schema  system_views         
+library   system     system_distributed  system_traces  system_virtual_schema
+
+cqlsh> use library; 
+cqlsh:library> create table library_info(stud_id int,counter_value counter,stud_name text,book_name text,book_id int,dateofissue timestamp,primary key(stud_id,stud_name,book_name,book_id,dateofissue));
+cqlsh:library> describe library_info;
+
+CREATE TABLE library.library_info (
+    stud_id int,
+    stud_name text,
+    book_name text,
+    book_id int,
+    dateofissue timestamp,
+    counter_value counter,
+    PRIMARY KEY (stud_id, stud_name, book_name, book_id, dateofissue)
+) WITH CLUSTERING ORDER BY (stud_name ASC, book_name ASC, book_id ASC, dateofissue ASC)
+    AND additional_write_policy = '99p'
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND cdc = false
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND extensions = {}
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';
+cqlsh:library> update library_info set counter_value=counter_value+1 where stud_id=1 and stud_name='shashidhar' and book_name='BDA' and book_id = 111 and dateofissue ='2020-04-02';
+cqlsh:library> update library_info set counter_value=counter_value+1 where stud_id=2 and stud_name='samarth' and book_name='BDA' and book_id = 112 and dateofissue ='2020-05-03'; 
+cqlsh:library> update library_info set counter_value=counter_value+1 where stud_id=112 and stud_name='giri' and book_name='OOMD' and book_id = 1112 and dateofissue ='2019-05-03';
+cqlsh:library> select * from library_info;
+
+ stud_id | stud_name  | book_name | book_id | dateofissue                     | counter_value
+---------+------------+-----------+---------+---------------------------------+---------------
+       1 | shashidhar |       BDA |     111 | 2020-04-01 18:30:00.000000+0000 |             1
+       2 |    samarth |       BDA |     112 | 2020-05-02 18:30:00.000000+0000 |             1
+     112 |       giri |      OOMD |    1112 | 2019-05-02 18:30:00.000000+0000 |             1
+
+(3 rows)
+cqlsh:library> update library_info set counter_value=counter_value+1 where stud_id=112 and stud_name='giri' and book_name='OOMD' and book_id = 1112 and dateofissue ='2019-05-03';
+cqlsh:library> select * from library_info;
+
+ stud_id | stud_name  | book_name | book_id | dateofissue                     | counter_value
+---------+------------+-----------+---------+---------------------------------+---------------
+       1 | shashidhar |       BDA |     111 | 2020-04-01 18:30:00.000000+0000 |             1
+       2 |    samarth |       BDA |     112 | 2020-05-02 18:30:00.000000+0000 |             1
+     112 |       giri |      OOMD |    1112 | 2019-05-02 18:30:00.000000+0000 |             2
+
+(3 rows)
+
+cqlsh:library> copy library_info(stud_id,stud_name,book_name,book_id,dateofissue,counter_value) to 'g:\libraryinfo.csv';
+Using 1 child processes
+
+Starting copy of library.library_info with columns [stud_id, stud_name, book_name, book_id, dateofissue, counter_value].
+Processed: 3 rows; Rate:       5 rows/s; Avg. rate:       5 rows/s
+3 rows exported to 1 files in 0.655 seconds.
+cqlsh:library> create table library_info_import(stud_id int,counter_value counter,stud_name text,book_name text,book_id int,dateofissue timestamp,primary key(stud_id,stud_name,book_name,book_id,dateofissue));
+cqlsh:library> copy library_info_import(stud_id,stud_name,book_name,book_id,dateofissue,counter_value) from 'g:\libraryinfo.csv';
+Using 1 child processes
+
+Starting copy of library.library_info_import with columns [stud_id, stud_name, book_name, book_id, dateofissue, counter_value].
+Processed: 3 rows; Rate:       5 rows/s; Avg. rate:       7 rows/s
+3 rows imported from 1 files in 0.409 seconds (0 skipped).
+cqlsh:library> select * from library_info_import;
+
+ stud_id | stud_name | book_name | book_id | dateofissue                     | counter_value
+---------+-----------+-----------+---------+---------------------------------+---------------
+       1 |shashidhar |       BDA |     111 | 2020-04-01 18:30:00.000000+0000 |             1
+       2 |   samarth |       BDA |     112 | 2020-05-02 18:30:00.000000+0000 |             1
+     112 |      giri |      OOMD |    1112 | 2019-05-02 18:30:00.000000+0000 |             2
+
+(3 rows)
