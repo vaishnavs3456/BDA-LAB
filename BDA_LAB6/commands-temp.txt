@@ -1,0 +1,118 @@
+shashidhar@shashidhar-VirtualBox:~$ start-all.sh
+WARNING: Attempting to start all Apache Hadoop daemons as shashidhar in 10 seconds.
+WARNING: This is not a recommended production deployment configuration.
+WARNING: Use CTRL-C to abort.
+Starting namenodes on [localhost]
+Starting datanodes
+Starting secondary namenodes [shashidhar-VirtualBox]
+Starting resourcemanager
+Starting nodemanagers
+
+
+shashidhar@shashidhar-VirtualBox:~$ hdfs dfs -mkdir /lab5
+
+
+shashidhar@shashidhar-VirtualBox:~$ hdfs dfs -ls /
+Found 1 items
+drwxr-xr-x   - shashidhar supergroup          0 2021-05-07 11:44 /lab5
+
+
+shashidhar@shashidhar-VirtualBox:~$ hdfs dfs -copyFromLocal /home/shashidhar/Downloads/Dataset /lab5
+
+
+shashidhar@shashidhar-VirtualBox:~$ hdfs dfs -ls /lab5
+Found 1 items
+-rw-r--r--   1 shashidhar supergroup     888190 2021-05-07 11:45 /lab5/Dataset
+
+
+shashidhar@shashidhar-VirtualBox:~$ hadoop jar  /home/shashidhar/Desktop/temparature.jar  /lab5/Dataset /lab5_output
+2021-05-07 11:47:32,517 INFO client.RMProxy: Connecting to ResourceManager at /0.0.0.0:8032
+2021-05-07 11:47:33,610 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2021-05-07 11:47:33,673 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/shashidhar/.staging/job_1620367902539_0001
+2021-05-07 11:47:34,358 INFO input.FileInputFormat: Total input files to process : 1
+2021-05-07 11:47:34,599 INFO mapreduce.JobSubmitter: number of splits:1
+2021-05-07 11:47:35,156 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1620367902539_0001
+2021-05-07 11:47:35,162 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2021-05-07 11:47:35,744 INFO conf.Configuration: resource-types.xml not found
+2021-05-07 11:47:35,744 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2021-05-07 11:47:36,498 INFO impl.YarnClientImpl: Submitted application application_1620367902539_0001
+2021-05-07 11:47:36,767 INFO mapreduce.Job: The url to track the job: http://shashidhar-VirtualBox:8088/proxy/application_1620367902539_0001/
+2021-05-07 11:47:36,768 INFO mapreduce.Job: Running job: job_1620367902539_0001
+2021-05-07 11:47:58,693 INFO mapreduce.Job: Job job_1620367902539_0001 running in uber mode : false
+2021-05-07 11:47:58,695 INFO mapreduce.Job:  map 0% reduce 0%
+2021-05-07 11:48:08,934 INFO mapreduce.Job:  map 100% reduce 0%
+2021-05-07 11:48:19,054 INFO mapreduce.Job:  map 100% reduce 100%
+2021-05-07 11:48:20,073 INFO mapreduce.Job: Job job_1620367902539_0001 completed successfully
+2021-05-07 11:48:20,376 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=72210
+		FILE: Number of bytes written=613935
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=888289
+		HDFS: Number of bytes written=8
+		HDFS: Number of read operations=8
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=1
+		Launched reduce tasks=1
+		Data-local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=7977
+		Total time spent by all reduces in occupied slots (ms)=7645
+		Total time spent by all map tasks (ms)=7977
+		Total time spent by all reduce tasks (ms)=7645
+		Total vcore-milliseconds taken by all map tasks=7977
+		Total vcore-milliseconds taken by all reduce tasks=7645
+		Total megabyte-milliseconds taken by all map tasks=8168448
+		Total megabyte-milliseconds taken by all reduce tasks=7828480
+	Map-Reduce Framework
+		Map input records=6565
+		Map output records=6564
+		Map output bytes=59076
+		Map output materialized bytes=72210
+		Input split bytes=99
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=1
+		Reduce shuffle bytes=72210
+		Reduce input records=6564
+		Reduce output records=1
+		Spilled Records=13128
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=259
+		CPU time spent (ms)=2340
+		Physical memory (bytes) snapshot=357072896
+		Virtual memory (bytes) snapshot=5073674240
+		Total committed heap usage (bytes)=255201280
+		Peak Map Physical memory (bytes)=230187008
+		Peak Map Virtual memory (bytes)=2532483072
+		Peak Reduce Physical memory (bytes)=126885888
+		Peak Reduce Virtual memory (bytes)=2541191168
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=888190
+	File Output Format Counters 
+		Bytes Written=8
+
+
+shashidhar@shashidhar-VirtualBox:~$ hdfs dfs -ls /lab5_output
+Found 2 items
+-rw-r--r--   1 shashidhar supergroup          0 2021-05-07 11:48 /lab5_output/_SUCCESS
+-rw-r--r--   1 shashidhar supergroup          8 2021-05-07 11:48 /lab5_output/part-r-00000
+
+
+shashidhar@shashidhar-VirtualBox:~$ hdfs dfs -cat /lab5_output/part-r-00000
+1901	46
+shashidhar@shashidhar-VirtualBox:~$ 
+
